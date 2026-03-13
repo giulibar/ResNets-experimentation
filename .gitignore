@@ -1,0 +1,14 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+
+# Jupyter
+.ipynb_checkpoints
+
+# Datos y Pesos (opcional, si son muy pesados)
+*.h5
+*.h5py
+data/
