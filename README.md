@@ -1,10 +1,7 @@
 ## Proyecto: ResNet simple desde cero
 
-Este repositorio contiene una **implementación propia y simplificada de una Red Residual (ResNet)** para clasificación de imágenes, pensada como proyecto de portafolio.
+Este repositorio contiene una **implementación propia y simplificada de una Red Residual (ResNet)** para clasificación de imágenes.
 
-> ⚠️ **Nota importante sobre el honor code**  
-> Este proyecto está **inspirado** en la Specialization de *Deep Learning* de Andrew Ng (Coursera), pero **no contiene el notebook original ni las soluciones de los ejercicios**.  
-> Todo el código que aparece aquí ha sido reescrito desde cero, con modificaciones y comentarios propios, y usando un flujo de trabajo independiente.
 
 ### Objetivos del proyecto
 
