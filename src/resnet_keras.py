@@ -1,7 +1,5 @@
 """
-Implementación simple de bloques residuales y un modelo tipo ResNet en Keras,
-inspirado en el ejercicio del curso, pero escrita aquí como módulo limpio
-para tu portfolio.
+Implementación simple de bloques residuales y un modelo tipo ResNet en Keras
 """
 
 import tensorflow as tf
@@ -160,16 +158,17 @@ def build_resnet50(input_shape=(64, 64, 3), classes=6):
     X = identity_block(X, 3, [512, 512, 2048], block_name="conv5_block2")
     X = identity_block(X, 3, [512, 512, 2048], block_name="conv5_block3")
 
-    # Capa final (como en el notebook original)
+    # Capa final
     X = layers.AveragePooling2D(pool_size=(2, 2), name="avg_pool")(X)
     X = layers.Flatten(name="flatten")(X)
+    
+    X = layers.Dropout(0.5, name="dropout_final")(X) 
+    
     X = layers.Dense(classes, activation="softmax", name="fc")(X)
 
     model = Model(inputs=X_input, outputs=X, name="ResNet50")
     return model
 
-
-def build_resnet50_cifar(input_shape=(32, 32, 3), classes=10):
     """
     Variante práctica para CIFAR-10 (32x32).
 
@@ -216,7 +215,6 @@ def build_resnet50_cifar(input_shape=(32, 32, 3), classes=10):
 
 
 if __name__ == "__main__":
-    # Pequeño test del modelo grande (estilo notebook)
     model = build_resnet50()
     model.summary()
 
