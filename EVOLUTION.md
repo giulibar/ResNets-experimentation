@@ -9,8 +9,9 @@ Este documento sirve como registro de ingeniería para documentar la evolución 
 | ID | Description | Epochs | Train Acc | Dev Acc | Test Acc | State |
 |:---|:---|:---:|:---:|:---:|:---|:---|
 | 01 | **Baseline:** ResNet-50 standard | 20 | 0.9546  | 0.6380 | 0.6378 | Overfitting |
-| 02 | **Data Augmentation:** Flip + Rotation | 20 | 0.8065  | 0.7517  | 0.7517 | Better generalization, high bias |  
-| 03 | **Train more time:** More epochs + early stopping | 50 | 0.8399 | 0.7799  | 0.7799 | Overfitting |  
+| 02 | **Data Augmentation:** Flip + Rotation | 20 | 0.8065  | 0.7517  | 0.7517 | High bias |  
+| 03 | **Train more time:** More epochs + early stopping | 28 | 0.8986 | 0.7799  | 0.7799 | Overfitting |  
+| 04 | **Scale images, variable LR:** Images 160x160 + ReduceLROnPlateau + DropOut | 33 | 0.9850 | 0.8928  | - | Overfitting |  
 
 ---
 
@@ -23,7 +24,7 @@ Para poder entrenar el modelo con los datos de CIFAR-10 usando la arquitectura d
 ### Experimento #01
 * **Arquitectura:** ResNet-50.
 * **Configuración Técnica:**
-    * **Input Shape:** (32, 32, 3)
+    * **Input Shape:** (64, 64, 3)
     * **Optimizer:** Adam (LR inicial: 0.0001)
     * **Batch Size:** 64
     * **Normalización:** Píxeles reescalados a [0, 1].
@@ -56,7 +57,7 @@ Para poder entrenar el modelo con los datos de CIFAR-10 usando la arquitectura d
 ### Experimento #02
 * **Arquitectura:** ResNet-50.
 * **Configuración Técnica:**
-    * **Input Shape:** (32, 32, 3)
+    * **Input Shape:** (64, 64, 3)
     * **Optimizer:** Adam (LR inicial: 0.00005)
     * **Batch Size:** 64
     * **Normalización:** Píxeles reescalados a [0, 1].
@@ -88,16 +89,16 @@ Para poder entrenar el modelo con los datos de CIFAR-10 usando la arquitectura d
 ### Experimento #03
 * **Arquitectura:** ResNet-50.
 * **Configuración Técnica:**
-    * **Input Shape:** (32, 32, 3)
+    * **Input Shape:** (64, 64, 3)
     * **Optimizer:** Adam (LR inicial: 0.00005)
     * **Batch Size:** 64
     * **Normalización:** Píxeles reescalados a [0, 1].
-    * **Epochs:** 40
+    * **Epochs:** 28
 
 
 #### Resultados
 * **Training Accuracy:** 89.86%
-* **Dev Accuracy:** 77.99%
+* **Dev Accuracy:** 77.91%
 * **Test Accuracy:** 77.99%
 
 <br>
@@ -109,20 +110,66 @@ Se recupero el entrenamiento de las 20 epocas anteriores para no tener que reent
 #### Conclusiones
 
 1.  **Overfitting:** Si bien el modelo mejoro su performance muy levemente en dev y test, vemos que la accuracy en train estaba subiendo muy rapido respecto a dev por lo que el modelo esta sobreajustando nuevamente.
-3.  **Conclusion:**  
+3.  **Conclusion:**  El modelo sobreajusto mucho y el early stopping corto el entrenamiento, regularizar o aumentar data favoreceria el desempeño
 4.  **Mejoras para el siguiente experimento:** 
 - Reescalado de imagenes a 160 x 160
 - ReduceLROnPlateau para el LR
 - DropOut
 
 
+---
+
+
+### Experimento #04
+* **Arquitectura:** ResNet-50.
+* **Configuración Técnica:**
+    * **Input Shape:** (160, 160, 3)
+    * **Optimizer:** Adam (LR inicial: 1.0000e-04)
+    * **Batch Size:** 64
+    * **Normalización:** Píxeles reescalados a [0, 1].
+    * **DropOut:** 0.5 on dense final layer
+    * **Epochs:** 33
+
+
+#### Resultados
+* **Training Accuracy:** 98.50%
+* **Dev Accuracy:** 89.28%
+* **Test Accuracy:** -
+
+<br>
+
+![trainingphoto](/images/4exp.png)
+
+
+#### Conclusiones
+
+1.  **Overfitting:** 
+3.  **Conclusion:** Problema con limitaciones de recursos, agregare model checkpints para no perder el progreso en caso de error
+weight decay
+SGD
+model checkpoint
+train more epochs
 
 
 
+---
 
 
+### Experimento #05
+
+en la epoca 40 train acc sea de 94% y dev acc de 87.1%
+
+![trainingphoto](/images/5exp-primer.png)
 
 
+--- 
+
+### Experimento #06
+
+Continuo el train del exp anterior hasta 80 epochs y agrego data augmentation
+ layers.RandomTranslation(0.1, 0.1), # Mueve la imagen para que no memorice la posición
+            layers.RandomZoom(0.1),            # Zoom aleatorio para variar escalas
+            layers.RandomContrast(0.1),        # Variación de iluminación
 
 
 
