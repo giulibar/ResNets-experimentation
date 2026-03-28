@@ -4,6 +4,17 @@ This repository contains a **custom, simplified implementation of a Residual Net
 
 > For detailed documentation of all experiments, see [EVOLUTION.md](./EVOLUTION.md).
 
+
+<br>
+
+
+<div>
+  <p>This is my cat :D</p>
+  <img src="./images/prediction.jpeg" width="400">
+</div>
+
+<br>
+
 ### Project Goals
 
 - **Implement residual blocks** (skip connections) from scratch.
