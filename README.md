@@ -2,6 +2,7 @@
 
 This repository contains a **custom, simplified implementation of a Residual Network (ResNet)** for image classification.
 
+> For detailed documentation of all experiments, see [EVOLUTION.md](./EVOLUTION.md).
 
 ### Project Goals
 
