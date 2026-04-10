@@ -10,5 +10,6 @@ venv/
 
 # Datos y Pesos (opcional, si son muy pesados)
 *.h5
+*.keras
 *.h5py
 data/
