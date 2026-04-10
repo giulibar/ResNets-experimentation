@@ -1,194 +1,223 @@
-# 📈 Log de Experimentos: ResNet-50 en CIFAR-10
+# 📈 Experiment Log: ResNet-50 on CIFAR-10
 
-Este documento sirve como registro de ingeniería para documentar la evolución del modelo, las hipótesis probadas y los resultados obtenidos en cada iteración del proyecto.
+This document serves as an engineering log to document the model's evolution, tested hypotheses, and results obtained in each project iteration.
 
----
-
-## Tabla Comparativa de Resultados
-
-| ID | Description | Epochs | Train Acc | Dev Acc | Test Acc | State |
-|:---|:---|:---:|:---:|:---:|:---|:---|
-| 01 | **Baseline:** ResNet-50 standard | 20 | 0.9546  | 0.6380 | 0.6378 | Overfitting |
-| 02 | **Data Augmentation:** Flip + Rotation | 20 | 0.8065  | 0.7517  | 0.7517 | High bias |  
-| 03 | **Train more time:** More epochs + early stopping | 28 | 0.8986 | 0.7799  | 0.7799 | Overfitting |  
-| 04 | **Scale images, variable LR:** Images 160x160 + ReduceLROnPlateau + DropOut | 33 | 0.9850 | 0.8928  | - | Overfitting |  
+> **Note:** ResNet-50 is an excessively large and complex architecture for the CIFAR-10 classification problem. However, the challenge was precisely to explore how to train this model without overfitting and to achieve the best possible performance across successive experiments — all while deepening my understanding of model training through hands-on practice as part my Deep Learning specialization.
 
 ---
 
-## Detalle de Iteraciones
+## Results Summary
 
-Para poder entrenar el modelo con los datos de CIFAR-10 usando la arquitectura de ResNet-50 (la cual es muy compleja) se tuvo que implementar un reescalado de 32x32 a 64x64 píxeles. Sin esta transformación, la profundidad de la ResNet-50 colapsaba los mapas de características a 1x1, impidiendo el aprendizaje de patrones espaciales complejos en clases visualmente similares.
+| ID | Description | Epochs | Train Acc | Dev Acc | Test Acc | Status |
+|:---|:---|:---:|:---:|:---:|:---:|:---|
+| 01 | **Baseline:** ResNet-50 standard | 20 | 0.9546 | 0.6380 | 0.6378 | Overfitting |
+| 02 | **Data Augmentation:** Flip + Rotation | 20 | 0.8065 | 0.7517 | 0.7517 | High bias |
+| 03 | **Train more time:** More epochs + early stopping | 28 | 0.8986 | 0.7799 | 0.7799 | Overfitting |
+| 04 | **Scale images, variable LR:** Images 160×160 + ReduceLROnPlateau + Dropout | 33 | 0.9850 | 0.8928 | - | Overfitting |
 
 ---
 
-### Experimento #01
-* **Arquitectura:** ResNet-50.
-* **Configuración Técnica:**
-    * **Input Shape:** (64, 64, 3)
-    * **Optimizer:** Adam (LR inicial: 0.0001)
-    * **Batch Size:** 64
-    * **Normalización:** Píxeles reescalados a [0, 1].
-    * **Epochs:** 20
+## Experiment Detail
 
-#### Resultados
-* **Training Accuracy:** 95.46%
-* **Dev Accuracy:** 63.80%
-* **Test Accuracy:** 63.78%
+---
 
-<br>
+### Experiment #01
+
+#### Configuration
+| Parameter | Value |
+|:---|:---|
+| Architecture | ResNet-50 |
+| Input Shape | (64, 64, 3) |
+| Optimizer | Adam (LR: 0.0001) |
+| Batch Size | 64 |
+| Normalization | Pixels rescaled to [0, 1] |
+| Epochs | 20 |
+
+#### Results
+| Metric | Value |
+|:---|:---|
+| Training Accuracy | 95.46% |
+| Dev Accuracy | 63.80% |
+| Test Accuracy | 63.78% |
 
 ![trainingphoto](/images/1exp.png)
 
-#### Conclusiones
+#### Conclusions
 
-1.  **Overfitting:** Se observa un gap de más del 32% entre el entrenamiento y el test. El modelo esta memorizando el ruido del set de entrenamiento en lugar de generalizar características.
-2.  **Inestabilidad en Validación:** A pesar de usar un LR conservador de 0.0001, las curvas de *val_accuracy* muestran inestabilidad y los saltos entre epocas son muy grandes. Intentaremos reducir el LR para suavizar la curva.
-3. **Conclusion:** El modelo no esta generalizando correctamente y su comportamiento es pobre.
-3.  **Mejoras para el siguiente experimento:** 
-- Reducir el LR de 0.0001 a 0.00005
-- Aplicar data augmentation con rotacion y zoom aleatorios a las imagenes del set para no sobreajustar a los datos de entrenamiento.
-
-
-
-
+1. **Overfitting:** A gap of over 32% is observed between training and test accuracy. The model is memorizing noise from the training set instead of generalizing features.
+2. **Validation Instability:** Despite using a conservative LR of 0.0001, the `val_accuracy` curves show instability with large jumps between epochs.
+3. **Summary:** The model is not generalizing correctly and its behavior is poor.
 
 ---
 
-### Experimento #02
-* **Arquitectura:** ResNet-50.
-* **Configuración Técnica:**
-    * **Input Shape:** (64, 64, 3)
-    * **Optimizer:** Adam (LR inicial: 0.00005)
-    * **Batch Size:** 64
-    * **Normalización:** Píxeles reescalados a [0, 1].
-    * **Epochs:** 20
+### Experiment #02
 
+#### Implementations
+- Reduced LR from 0.0001 to 0.00005
+- Applied data augmentation with random rotation and zoom to prevent overfitting to training data
 
-#### Resultados
-* **Training Accuracy:** 80.65%
-* **Dev Accuracy:** 75.17%
-* **Test Accuracy:** 75.17%
+#### Configuration
+| Parameter | Value |
+|:---|:---|
+| Architecture | ResNet-50 |
+| Input Shape | (64, 64, 3) |
+| Optimizer | Adam (LR: 0.00005) |
+| Batch Size | 64 |
+| Normalization | Pixels rescaled to [0, 1] |
+| Epochs | 20 |
 
-<br>
+#### Results
+| Metric | Value |
+|:---|:---|
+| Training Accuracy | 80.65% |
+| Dev Accuracy | 75.17% |
+| Test Accuracy | 75.17% |
 
 ![trainingphoto](/images/2exp.png)
 
-#### Conclusiones
+#### Conclusions
 
-1.  **Overfitting:** Vemos como mejoro la accuracy en el devset y el gap con train acc es de 5%, esto sugiere que el modelo esta generalizando mucho mejor y no sobreajuistando a los datos de entrenamiento.
-2.  **Inestabilidad en Validación:** La reduccion del LR surtio efecto y la curva de accuracy tiene un comportamiento mas estable sin tantos saltos abruptos. 
-3.  **Conclusion:** El modelo generalizo mucho mejor en el set de test, vemos que la accuracy en validation sigue subiendo por lo que hay margen de mejora. 
-4.  **Mejoras para el siguiente experimento:** 
-- Continuar el entrenamiento por mas epochs
-- Implementar early-stopping para parar el punto justo donde el modelo tiene mejor performance
-
-
+1. **Reduced Overfitting:** Dev accuracy improved and the gap with train accuracy is now 5%, suggesting the model is generalizing much better.
+2. **Validation Stability:** The LR reduction took effect and the accuracy curve behaves more stably without abrupt jumps.
+3. **Summary:** The model generalized much better on the test set. Validation accuracy is still climbing, indicating room for improvement.
 
 ---
 
-### Experimento #03
-* **Arquitectura:** ResNet-50.
-* **Configuración Técnica:**
-    * **Input Shape:** (64, 64, 3)
-    * **Optimizer:** Adam (LR inicial: 0.00005)
-    * **Batch Size:** 64
-    * **Normalización:** Píxeles reescalados a [0, 1].
-    * **Epochs:** 28
+### Experiment #03
 
+#### Implementations
+- Continued training for more epochs
+- Implemented early stopping to stop at the point of best model performance
 
-#### Resultados
-* **Training Accuracy:** 89.86%
-* **Dev Accuracy:** 77.91%
-* **Test Accuracy:** 77.99%
+#### Configuration
+| Parameter | Value |
+|:---|:---|
+| Architecture | ResNet-50 |
+| Input Shape | (64, 64, 3) |
+| Optimizer | Adam (LR: 0.00005) |
+| Batch Size | 64 |
+| Normalization | Pixels rescaled to [0, 1] |
+| Epochs | 28 |
 
-<br>
+#### Results
+| Metric | Value |
+|:---|:---|
+| Training Accuracy | 89.86% |
+| Dev Accuracy | 77.91% |
+| Test Accuracy | 77.99% |
 
 ![trainingphoto](/images/3exp.png)
 
-Se recupero el entrenamiento de las 20 epocas anteriores para no tener que reentrenar el modelo y se sigio por 20 epocas mas aplicando early-stopping con una paciencia de 7 monitoreando la val_loss para darle tiempo al modelo de mejorar antes de cortar el entrenamiento. 
+Training was resumed from the previous 20-epoch checkpoint to avoid retraining from scratch, and continued for 20 additional epochs with early stopping (patience=7, monitoring `val_loss`) to give the model sufficient time to improve before cutting training.
 
-#### Conclusiones
+#### Conclusions
 
-1.  **Overfitting:** Si bien el modelo mejoro su performance muy levemente en dev y test, vemos que la accuracy en train estaba subiendo muy rapido respecto a dev por lo que el modelo esta sobreajustando nuevamente.
-3.  **Conclusion:**  El modelo sobreajusto mucho y el early stopping corto el entrenamiento, regularizar o aumentar data favoreceria el desempeño
-4.  **Mejoras para el siguiente experimento:** 
-- Reescalado de imagenes a 160 x 160
-- ReduceLROnPlateau para el LR
-- DropOut
-
+1. **Overfitting:** While the model slightly improved on dev and test, training accuracy was rising much faster than dev accuracy, indicating the model is overfitting again.
+2. **Summary:** The model overfit significantly and early stopping cut the training short. Regularization or additional data would benefit performance.
 
 ---
+### Experiment #04
 
+#### Implementations
+- Images rescaled to 160×160
+- ReduceLROnPlateau for dynamic LR scheduling
+- Dropout (0.5) on final dense layer
 
-### Experimento #04
-* **Arquitectura:** ResNet-50.
-* **Configuración Técnica:**
-    * **Input Shape:** (160, 160, 3)
-    * **Optimizer:** Adam (LR inicial: 1.0000e-04)
-    * **Batch Size:** 64
-    * **Normalización:** Píxeles reescalados a [0, 1].
-    * **DropOut:** 0.5 on dense final layer
-    * **Epochs:** 33
+#### Configuration
+| Parameter | Value |
+|:---|:---|
+| Architecture | ResNet-50 |
+| Input Shape | (160, 160, 3) |
+| Optimizer | Adam (LR: 1.0000e-04) |
+| Batch Size | 64 |
+| Normalization | Pixels rescaled to [0, 1] |
+| Dropout | 0.5 on final dense layer |
+| Epochs | 33 |
 
-
-#### Resultados
-* **Training Accuracy:** 98.50%
-* **Dev Accuracy:** 89.28%
-* **Test Accuracy:** -
-
-<br>
+#### Results
+| Metric | Value |
+|:---|:---|
+| Training Accuracy | 98.50% |
+| Dev Accuracy | 89.28% |
+| Test Accuracy | - |
 
 ![trainingphoto](/images/4exp.png)
 
+#### Conclusions
 
-#### Conclusiones
-
-1.  **Overfitting:** 
-3.  **Conclusion:** Problema con limitaciones de recursos, agregare model checkpints para no perder el progreso en caso de error
-weight decay
-SGD
-model checkpoint
-train more epochs
-
-
+1. **Overfitting:** The model is still overfitting.
+2. **Summary:** Resource limitations caused a loss of progress. Model checkpoints will be added to avoid losing progress in case of error.
 
 ---
 
+### Experiment #05
 
-### Experimento #05
+#### Implementations
+- Weight decay regularization
+- Switched optimizer from Adam to SGD
+- Added model checkpoints to preserve training progress
 
-en la epoca 40 train acc sea de 94% y dev acc de 87.1%
+#### Configuration
+| Parameter | Value |
+|:---|:---|
+| Architecture | ResNet-50 |
+| Input Shape | (160, 160, 3) |
+| Optimizer | SGD |
+| Normalization | Pixels rescaled to [0, 1] |
+| Dropout | 0.5 on final dense layer |
 
-![trainingphoto](/images/5exp-primer.png)
+#### Results
 
+| Metric | Value |
+|:---|:---|
+| Training Accuracy | 94.00% |
+| Dev Accuracy | 87.10% |
+| Test Accuracy | - |
 
---- 
+> Metrics reported at epoch 40.
 
-### Experimento #06
+![trainingphoto](/images/5exp.png)
 
-Continuo el train del exp anterior hasta 80 epochs y agrego data augmentation
- layers.RandomTranslation(0.1, 0.1), # Mueve la imagen para que no memorice la posición
-            layers.RandomZoom(0.1),            # Zoom aleatorio para variar escalas
-            layers.RandomContrast(0.1),        # Variación de iluminación
+#### Conclusions
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+1. **Improved Generalization:** Switching to SGD with weight decay reduced the train/dev gap compared to Experiment #04, showing better regularization.
+2. **Summary:** The model shows a healthier training dynamic. Continuing training with additional data augmentation may further close the gap and improve test performance.
 
 ---
+
+### Experiment #06
+
+#### Implementations
+- Continued training from Experiment #05
+- Added data augmentation layers:
+  - `RandomTranslation(0.1, 0.1)` — shifts the image so the model doesn't memorize position
+  - `RandomZoom(0.1)` — random zoom to vary scales
+  - `RandomContrast(0.1)` — lighting variation
+
+#### Configuration
+| Parameter | Value |
+|:---|:---|
+| Architecture | ResNet-50 |
+| Input Shape | (160, 160, 3) |
+| Optimizer | SGD |
+| Normalization | Pixels rescaled to [0, 1] |
+| Dropout | 0.5 on final dense layer |
+| Epochs | 35 |
+
+#### Results
+| Metric | Value |
+|:---|:---|
+| Training Accuracy | 90.15% |
+| Dev Accuracy | 87.17% |
+| Dev Loss | 0.4019 |
+| Test Accuracy | **89.40%** |
+| Test Loss | 0.3550 |
+| Learning Rate | 0.0020 |
+
+![trainingphoto](/images/6exp.png)
+
+#### Conclusions
+
+1. **Best generalization so far:** The train/dev gap narrowed to ~3%, the healthiest margin across all experiments.
+2. **Strong test performance:** 89.40% test accuracy is the best test result achieved, confirming that the combination of SGD, weight decay, and data augmentation generalizes well to unseen data.
+3. **Summary:** Data augmentation effectively reduced overfitting. The model is learning meaningful features rather than memorizing training examples.

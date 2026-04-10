@@ -1,82 +1,106 @@
-## Proyecto: ResNet simple desde cero
+## Project: Simple ResNet from Scratch
 
-Este repositorio contiene una **implementación propia y simplificada de una Red Residual (ResNet)** para clasificación de imágenes.
+This repository contains a **custom, simplified implementation of a Residual Network (ResNet)** for image classification on CIFAR-10.
+
+---
+
+### Project Goals
+
+- **Implement residual blocks** (skip connections) from scratch.
+- Build a **small ResNet** suitable for CIFAR-10.
+- Train and evaluate the model, exploring:
+  - The idea of learning residual functions $F(x)$ such that the output is $y = F(x) + x$.
+  - The **degradation problem in deep networks** and how skip connections help mitigate it.
+
+---
+
+### Repository Structure
 
 
-### Objetivos del proyecto
+For a detailed log of experiments, results, and observations, see the [EVOLUTION](./EVOLUTION.md) document.
 
-- **Implementar bloques residuales** (skip connections) desde cero.
-- Construir una **ResNet pequeña** adecuada para un dataset como CIFAR-10 o similar.
-- Entrenar y evaluar el modelo en un dataset de ejemplo.
-- Analizar resultados y mostrar el entendimiento de:
-  - La idea de aprender funciones residuales \(F(x)\) tal que la salida sea \(y = F(x) + x\).
-  - El problema de **degradación en redes profundas** y cómo las skip connections ayudan a mitigarlo.
 
-### Estructura del repositorio
-
-- `README.md`: este documento.
-- `requirements.txt`: dependencias del proyecto (TensorFlow, NumPy, Matplotlib).
+- `README.md`: this document.
+- `requirements.txt`: project dependencies (TensorFlow, NumPy, Matplotlib).
 - `src/`
-  - `resnet_keras.py`: implementación de bloques residuales (`identity_block`, `convolutional_block`) y de una ResNet pequeña en Keras.
-  - `train_keras.py`: script de entrenamiento configurable:
-    - **Modo CIFAR-10** (por defecto): carga el dataset desde Keras y entrena el modelo.
-    - **Modo directorio**: entrena con un dataset propio de imágenes organizado en subcarpetas por clase.
+  - `resnet_keras.py`: implementation of residual blocks (`identity_block`, `convolutional_block`) and `build_resnet50`, a small ResNet model in Keras.
+  - `train_keras.py`: training script for CIFAR-10 with data augmentation, SGD with weight decay, callbacks, and run logging.
+- `checkpoints/`: best model weights saved during training (`resnet_best.keras`).
+- `runs/`: per-run directories with `config.json` and `history.json` for experiment tracking.
 - `notebooks/`
-  - `resnet_experiments.ipynb`: notebook con experimentos, gráficas y análisis (carga el modelo entrenado y explora sus resultados).
+  - `resnet_experiments.ipynb`: notebook with experiments, plots, and analysis.
 
-### Instalación
+---
 
-1. Clona este repositorio:
+### Training Configuration
 
+| Parameter | Default |
+|---|---|
+| Input size | 160 × 160 |
+| Batch size | 64 |
+| Epochs | 20 |
+| Optimizer | SGD |
+| Learning rate | 0.01 |
+| Momentum | 0.9 |
+| Weight decay | 5e-4 |
+| Early stopping patience | 8 |
+| LR reduction factor | 0.2 |
+| LR reduction patience | 5 |
+
+**Data augmentation:** random horizontal flip, rotation (±15%), translation (±10%), zoom (±10%), and contrast (±10%).
+
+---
+
+### Installation
+
+1. Clone this repository:
 ```bash
-git clone <TU_URL_DEL_REPO>.git
+git clone <YOUR_REPO_URL>.git
 cd resnet-from-scratch
 ```
 
-2. (Opcional pero recomendado) Crea y activa un entorno virtual:
-
+2. (Optional but recommended) Create and activate a virtual environment:
 ```bash
 python -m venv venv
-.\venv\Scripts\activate  # En Windows
-# source venv/bin/activate  # En Linux/Mac
+.\venv\Scripts\activate  # On Windows
+# source venv/bin/activate  # On Linux/Mac
 ```
 
-3. Instala las dependencias:
-
+3. Install dependencies:
 ```bash
 pip install -r requirements.txt
 ```
 
-### Uso rápido
+---
 
-- **Entrenar usando CIFAR-10 (recomendado como demo reproducible)**:
+### Quick Start
 
+Train the model on CIFAR-10:
 ```bash
-python src/train_keras.py --dataset cifar --epochs 10
+python src/train_keras.py
 ```
 
-- **Entrenar usando tu propio dataset** (imágenes en subcarpetas dentro de `data/`):
+This will:
+- Download and preprocess CIFAR-10 automatically.
+- Apply data augmentation during training.
+- Save the best checkpoint to `checkpoints/resnet_best.keras`.
+- Save the final model to `model_final.keras`.
+- Log the config and training history to a timestamped folder under `runs/`.
 
-```bash
-python src/train_keras.py --dataset directory --data_dir data --epochs 10
-```
-
-En ambos casos se guarda el modelo entrenado como `small_resnet_keras.h5` en la raíz del proyecto.
-
-Después, puedes abrir el notebook de experimentos:
-
+Then, open the experiments notebook:
 ```bash
 jupyter notebook notebooks/resnet_experiments.ipynb
 ```
 
-Ahí se carga el modelo guardado y se realizan:
+The notebook covers:
 
-- Evaluaciones en el conjunto de validación/test.
-- Visualizaciones de predicciones.
-- Comentarios sobre el comportamiento de la red y el papel de las skip connections.
+- Evaluation on the test set.
+- Prediction visualizations.
+- Discussion of the network's behavior and the role of skip connections.
 
-### Créditos
+---
 
-- Inspirado por la **Deep Learning Specialization** de Andrew Ng.  
-- Implementación y organización del proyecto: **Giuli**.
+### Credits
 
+- Inspired by Andrew Ng's **Deep Learning Specialization**.
+- Implementation and project structure: **Giuli**.
